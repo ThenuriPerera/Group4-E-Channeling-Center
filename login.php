@@ -1,11 +1,9 @@
 <?php
+session_start();
 require_once 'includes/db_connect.php';
 $pageTitle = "Login";
 $basePath = "";
 
-session_start();
-
-// If already logged in, redirect to home
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -27,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_full_name'] = $user['full_name'];
         $_SESSION['user_email'] = $user['email'];
 
-        // Redirect to the page they were trying to access, or home
         $redirect = $_SESSION['redirect_after_login'] ?? 'index.php';
         unset($_SESSION['redirect_after_login']);
         header('Location: ' . $redirect);
@@ -46,10 +43,6 @@ include 'includes/header.php';
 
     <?php if ($error): ?>
         <p class="error-msg"><?php echo htmlspecialchars($error); ?></p>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['registered'])): ?>
-        <p class="success-msg">Registration successful! Please login.</p>
     <?php endif; ?>
 
     <form action="login.php" method="POST">

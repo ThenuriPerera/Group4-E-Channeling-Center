@@ -1,21 +1,26 @@
 <?php
+session_start();
 require_once 'includes/db_connect.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit;
 }
 
-// --- Collect & sanitize input ---
 $doctorId = (int)($_POST['doctor_id'] ?? 0);
 $patientName = trim($_POST['patient_name'] ?? '');
 $patientAge = (int)($_POST['patient_age'] ?? 0);
 $patientContact = trim($_POST['patient_contact'] ?? '');
 $appointmentDate = trim($_POST['appointment_date'] ?? '');
+$userId = $_SESSION['user_id'];
 
 $errors = [];
 
-// --- Server-side validation (never trust client-side JS alone) ---
 if ($patientName === '' || strlen($patientName) < 2) {
     $errors[] = "Please enter a valid name.";
 }
@@ -29,7 +34,6 @@ if ($appointmentDate === '' || strtotime($appointmentDate) < strtotime(date('Y-m
     $errors[] = "Please choose a valid future appointment date.";
 }
 
-// --- Confirm the doctor actually exists and get the fee ---
 $stmt = $pdo->prepare("SELECT * FROM doctors WHERE doctor_id = ?");
 $stmt->execute([$doctorId]);
 $doctor = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -39,7 +43,6 @@ if (!$doctor) {
 }
 
 if (!empty($errors)) {
-    // Send the user back with an error message (kept simple: session-free)
     $pageTitle = "Booking Error";
     $basePath = "";
     include 'includes/header.php';
@@ -52,13 +55,13 @@ if (!empty($errors)) {
     exit;
 }
 
-// --- Insert appointment with 'Pending' status (paid only after payment.php) ---
 $insert = $pdo->prepare("
-    INSERT INTO appointments (doctor_id, patient_name, patient_age, patient_contact, appointment_date, amount_paid, payment_status)
-    VALUES (?, ?, ?, ?, ?, ?, 'Pending')
+    INSERT INTO appointments (doctor_id, user_id, patient_name, patient_age, patient_contact, appointment_date, amount_paid, payment_status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
 ");
 $insert->execute([
     $doctorId,
+    $userId,
     $patientName,
     $patientAge,
     $patientContact,
@@ -68,6 +71,5 @@ $insert->execute([
 
 $appointmentId = $pdo->lastInsertId();
 
-// --- Move on to the mock payment gateway ---
 header("Location: payment.php?appointment_id=" . $appointmentId);
 exit;

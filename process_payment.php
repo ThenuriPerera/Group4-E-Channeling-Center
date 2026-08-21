@@ -6,6 +6,12 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit;
+}
+
 $appointmentId = (int)($_POST['appointment_id'] ?? 0);
 $cardName = trim($_POST['card_name'] ?? '');
 $cardNumber = preg_replace('/\D/', '', $_POST['card_number'] ?? '');
@@ -14,14 +20,13 @@ $cardCvv = trim($_POST['card_cvv'] ?? '');
 
 $errors = [];
 
-// --- Basic mock validation (this is NOT real payment security) ---
 if ($cardName === '') $errors[] = "Name on card is required.";
 if (strlen($cardNumber) !== 16) $errors[] = "Card number must be 16 digits.";
 if (!preg_match('/^(0[1-9]|1[0-2])\/\d{2}$/', $cardExpiry)) $errors[] = "Expiry must be in MM/YY format.";
 if (!preg_match('/^[0-9]{3}$/', $cardCvv)) $errors[] = "CVV must be 3 digits.";
 
-$stmt = $pdo->prepare("SELECT * FROM appointments WHERE appointment_id = ?");
-$stmt->execute([$appointmentId]);
+$stmt = $pdo->prepare("SELECT * FROM appointments WHERE appointment_id = ? AND user_id = ?");
+$stmt->execute([$appointmentId, $_SESSION['user_id']]);
 $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$appointment) {
@@ -42,7 +47,6 @@ if (!empty($errors)) {
     exit;
 }
 
-// --- IMPORTANT: only the last 4 digits of the card are ever stored ---
 $cardLast4 = substr($cardNumber, -4);
 
 $update = $pdo->prepare("

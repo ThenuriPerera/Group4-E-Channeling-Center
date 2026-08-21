@@ -1,8 +1,4 @@
 <?php
-// ================================================================
-// AJAX ENDPOINT: returns doctors as JSON, filtered by name / specialization
-// Called from js/script.js using fetch()
-// ================================================================
 require_once 'includes/db_connect.php';
 header('Content-Type: application/json');
 

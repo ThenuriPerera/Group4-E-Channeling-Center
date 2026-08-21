@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'includes/db_connect.php';
 $pageTitle = "Home";
 $basePath = "";
@@ -15,31 +16,7 @@ include 'includes/header.php';
     <p>Browse our doctor panel, check availability and channel your appointment online.</p>
 </section>
 
-<section class="filter-bar">
-    <input type="text" id="searchInput" placeholder="Search doctor by name...">
-
-    <select id="specializationFilter">
-        <option value="">All Specializations</option>
-        <?php foreach ($specializations as $spec): ?>
-            <option value="<?php echo htmlspecialchars($spec); ?>"><?php echo htmlspecialchars($spec); ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <button id="resetFilters">Reset</button>
-</section>
-
-<section class="doctor-grid" id="doctorGrid">
-    <!-- Doctor cards are injected here by js/script.js via AJAX call to search.php -->
-    <p class="loading-text">Loading doctors...</p>
-</section>
-
-<!-- Template used by JS to build each doctor card (hidden, cloned via JS) -->
-<template id="doctorCardTemplate">
-    <div class="doctor-card">
-        <img class="doctor-img" src="" alt="Doctor photo">
-        <div class="doctor-info">
-            <h3 class="doctor-name"></h3>
-         <?php if (isset($_SESSION['user_id'])): ?>
+<?php if (isset($_SESSION['user_id'])): ?>
     <div style="max-width:1100px; margin:0 auto 20px; padding:0 20px;">
         <p style="background:#d1e7dd; padding:12px 18px; border-radius:8px; color:#0f5132;">
             Welcome back, <?php echo htmlspecialchars($_SESSION['user_full_name']); ?>! 
@@ -52,7 +29,29 @@ include 'includes/header.php';
             Registration successful! You are now logged in.
         </p>
     </div>
-<?php endif; ?>   <p class="doctor-spec"></p>
+<?php endif; ?>
+
+<section class="filter-bar">
+    <input type="text" id="searchInput" placeholder="Search doctor by name...">
+    <select id="specializationFilter">
+        <option value="">All Specializations</option>
+        <?php foreach ($specializations as $spec): ?>
+            <option value="<?php echo htmlspecialchars($spec); ?>"><?php echo htmlspecialchars($spec); ?></option>
+        <?php endforeach; ?>
+    </select>
+    <button id="resetFilters">Reset</button>
+</section>
+
+<section class="doctor-grid" id="doctorGrid">
+    <p class="loading-text">Loading doctors...</p>
+</section>
+
+<template id="doctorCardTemplate">
+    <div class="doctor-card">
+        <img class="doctor-img" src="" alt="Doctor photo">
+        <div class="doctor-info">
+            <h3 class="doctor-name"></h3>
+            <p class="doctor-spec"></p>
             <p class="doctor-days"><strong>Days:</strong> <span></span></p>
             <p class="doctor-times"><strong>Time:</strong> <span></span></p>
             <p class="doctor-fee">Rs. <span></span></p>
@@ -62,5 +61,4 @@ include 'includes/header.php';
 </template>
 
 <?php include 'includes/footer.php'; ?>
-
 <script src="js/script.js"></script>
