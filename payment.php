@@ -1,7 +1,14 @@
 <?php
+session_start();
 require_once 'includes/db_connect.php';
 $pageTitle = "Payment";
 $basePath = "";
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['redirect_after_login'] = 'payment.php?appointment_id=' . (isset($_GET['appointment_id']) ? (int)$_GET['appointment_id'] : 0);
+    header('Location: login.php');
+    exit;
+}
 
 $appointmentId = isset($_GET['appointment_id']) ? (int)$_GET['appointment_id'] : 0;
 
@@ -9,9 +16,9 @@ $stmt = $pdo->prepare("
     SELECT a.*, d.name AS doctor_name, d.specialization
     FROM appointments a
     JOIN doctors d ON a.doctor_id = d.doctor_id
-    WHERE a.appointment_id = ?
+    WHERE a.appointment_id = ? AND a.user_id = ?
 ");
-$stmt->execute([$appointmentId]);
+$stmt->execute([$appointmentId, $_SESSION['user_id']]);
 $appointment = $stmt->fetch(PDO::FETCH_ASSOC);
 
 include 'includes/header.php';
@@ -71,10 +78,8 @@ if ($appointment['payment_status'] === 'Paid') {
 <?php include 'includes/footer.php'; ?>
 
 <script>
-// Client-side formatting + light validation for the mock card form.
 const cardNumber = document.getElementById('card_number');
 cardNumber.addEventListener('input', function () {
-    // auto-space every 4 digits: 1234 5678 9012 3456
     let digits = this.value.replace(/\D/g, '').slice(0, 16);
     this.value = digits.replace(/(.{4})/g, '$1 ').trim();
 });

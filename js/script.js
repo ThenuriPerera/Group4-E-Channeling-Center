@@ -1,8 +1,3 @@
-// ================================================================
-// script.js - handles the doctor catalog search/filter on index.php
-// Uses plain fetch() (AJAX) to call search.php and get JSON back
-// ================================================================
-
 document.addEventListener('DOMContentLoaded', function () {
 
     const doctorGrid = document.getElementById('doctorGrid');
@@ -11,20 +6,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const resetBtn = document.getElementById('resetFilters');
     const template = document.getElementById('doctorCardTemplate');
 
-    // Load all doctors on first page load
     loadDoctors();
 
-    // Live search as the user types (debounced so we don't spam the server)
     let debounceTimer;
     searchInput.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(loadDoctors, 300);
     });
 
-    // Filter changes instantly
     specializationFilter.addEventListener('change', loadDoctors);
 
-    // Reset button clears both filters
     resetBtn.addEventListener('click', function () {
         searchInput.value = '';
         specializationFilter.value = '';

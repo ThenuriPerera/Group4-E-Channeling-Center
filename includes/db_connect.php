@@ -6,7 +6,7 @@
 $DB_HOST = "localhost";
 $DB_NAME = "echanneling_db";
 $DB_USER = "root";
-$DB_PASS = "2003.05.01.Sene"; 
+$DB_PASS = "2003.05.01.Sene"; // Change this to your MySQL password if you have one
 
 try {
     $pdo = new PDO(
@@ -14,7 +14,6 @@ try {
         $DB_USER,
         $DB_PASS
     );
-    // Throw real exceptions instead of silent failures
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
