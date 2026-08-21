@@ -2,7 +2,6 @@
 session_start();
 require_once '../includes/db_connect.php';
 
-// --- Route guard: only logged-in admins may view this page ---
 if (!isset($_SESSION['admin_id'])) {
     header('Location: login.php');
     exit;
