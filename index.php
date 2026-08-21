@@ -39,7 +39,20 @@ include 'includes/header.php';
         <img class="doctor-img" src="" alt="Doctor photo">
         <div class="doctor-info">
             <h3 class="doctor-name"></h3>
-            <p class="doctor-spec"></p>
+         <?php if (isset($_SESSION['user_id'])): ?>
+    <div style="max-width:1100px; margin:0 auto 20px; padding:0 20px;">
+        <p style="background:#d1e7dd; padding:12px 18px; border-radius:8px; color:#0f5132;">
+            Welcome back, <?php echo htmlspecialchars($_SESSION['user_full_name']); ?>! 
+            <a href="logout.php" style="color:#0f5132; text-decoration:underline;">Logout</a>
+        </p>
+    </div>
+<?php elseif (isset($_GET['registered'])): ?>
+    <div style="max-width:1100px; margin:0 auto 20px; padding:0 20px;">
+        <p style="background:#d1e7dd; padding:12px 18px; border-radius:8px; color:#0f5132;">
+            Registration successful! You are now logged in.
+        </p>
+    </div>
+<?php endif; ?>   <p class="doctor-spec"></p>
             <p class="doctor-days"><strong>Days:</strong> <span></span></p>
             <p class="doctor-times"><strong>Time:</strong> <span></span></p>
             <p class="doctor-fee">Rs. <span></span></p>

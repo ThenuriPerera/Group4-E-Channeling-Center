@@ -6,7 +6,7 @@
 $DB_HOST = "localhost";
 $DB_NAME = "echanneling_db";
 $DB_USER = "root";
-$DB_PASS = "5riL@nka";        // XAMPP default is usually an empty string
+$DB_PASS = "2003.05.01.Sene"; 
 
 try {
     $pdo = new PDO(
