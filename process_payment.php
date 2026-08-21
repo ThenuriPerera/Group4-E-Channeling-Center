@@ -1,11 +1,11 @@
 <?php
+session_start();
 require_once 'includes/db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php');
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
     exit;
 }
-
 $appointmentId = (int)($_POST['appointment_id'] ?? 0);
 $cardName = trim($_POST['card_name'] ?? '');
 $cardNumber = preg_replace('/\D/', '', $_POST['card_number'] ?? '');
